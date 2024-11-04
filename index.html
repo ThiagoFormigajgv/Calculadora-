@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Piso</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f7f7f7;
+    }
+    .calculator-container {
+        max-width: 400px;
+        width: 100%;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .calculator-container h2 {
+        text-align: center;
+        color: #333;
+    }
+    .input-group {
+        margin-bottom: 15px;
+    }
+    .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .input-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+    .result {
+        text-align: center;
+        font-size: 1.2em;
+        margin-top: 20px;
+        color: #007BFF;
+    }
+    .calculate-btn {
+        width: 100%;
+        padding: 10px;
+        background-color: #007BFF;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .instruction {
+        font-size: 0.9em;
+        color: #666;
+        text-align: center;
+        margin-top: -10px;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div class="calculator-container">
+    <h2>Calculadora de Piso</h2>
+    <p class="instruction">Use vírgula para separar casas decimais (Ex: 5,5)</p>
+    <div class="input-group">
+        <label for="roomLength">Comprimento do Ambiente (m):</label>
+        <input type="text" id="roomLength" placeholder="Ex: 5,5" required>
+    </div>
+    <div class="input-group">
+        <label for="roomWidth">Largura do Ambiente (m):</label>
+        <input type="text" id="roomWidth" placeholder="Ex: 4,0" required>
+    </div>
+    <div class="input-group">
+        <label for="tileLength">Comprimento do Piso (cm):</label>
+        <input type="text" id="tileLength" placeholder="Ex: 60" required>
+    </div>
+    <div class="input-group">
+        <label for="tileWidth">Largura do Piso (cm):</label>
+        <input type="text" id="tileWidth" placeholder="Ex: 60" required>
+    </div>
+    <div class="input-group">
+        <label for="wastage">Margem de Perda (%):</label>
+        <input type="text" id="wastage" placeholder="Ex: 10">
+    </div>
+    <button class="calculate-btn" onclick="calculateTiles()">Calcular</button>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    function calculateTiles() {
+        // Função para converter vírgula em ponto
+        function parseInput(value) {
+            return parseFloat(value.replace(',', '.'));
+        }
+
+        // Obter os valores de entrada e converter
+        const roomLength = parseInput(document.getElementById("roomLength").value);
+        const roomWidth = parseInput(document.getElementById("roomWidth").value);
+        const tileLength = parseInput(document.getElementById("tileLength").value) / 100; // Converter para metros
+        const tileWidth = parseInput(document.getElementById("tileWidth").value) / 100; // Converter para metros
+        const wastage = parseInput(document.getElementById("wastage").value) || 0;
+
+        // Validar os dados
+        if (isNaN(roomLength) || isNaN(roomWidth) || isNaN(tileLength) || isNaN(tileWidth)) {
+            document.getElementById("result").innerHTML = "Por favor, insira valores válidos.";
+            return;
+        }
+
+        // Calcular a área do ambiente e do piso
+        const roomArea = roomLength * roomWidth;
+        const tileArea = tileLength * tileWidth;
+
+        // Calcular a quantidade necessária de peças
+        let tilesNeeded = roomArea / tileArea;
+        tilesNeeded += tilesNeeded * (wastage / 100); // Adicionar margem de perda
+        tilesNeeded = Math.ceil(tilesNeeded); // Arredondar para cima
+
+        // Exibir o resultado
+        document.getElementById("result").innerHTML = `Quantidade de peças necessária: ${tilesNeeded}`;
+    }
+</script>
+
+</body>
+</html>
