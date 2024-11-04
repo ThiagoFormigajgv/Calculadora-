@@ -1,70 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora de Piso</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        background-color: #f7f7f7;
-    }
-    .calculator-container {
-        max-width: 400px;
-        width: 100%;
-        padding: 20px;
-        border-radius: 8px;
-        background-color: #fff;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    .calculator-container h2 {
-        text-align: center;
-        color: #333;
-    }
-    .input-group {
-        margin-bottom: 15px;
-    }
-    .input-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-    }
-    .input-group input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-    }
-    .result {
-        text-align: center;
-        font-size: 1.2em;
-        margin-top: 20px;
-        color: #007BFF;
-    }
-    .calculate-btn {
-        width: 100%;
-        padding: 10px;
-        background-color: #007BFF;
-        color: #fff;
-        font-weight: bold;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    .instruction {
-        font-size: 0.9em;
-        color: #666;
-        text-align: center;
-        margin-top: -10px;
-        margin-bottom: 10px;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Piso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        .calculator-container {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+            position: absolute; /* Mudar para absolute */
+            top: 20px; /* Distância do topo */
+            left: 50%; /* Centralizar horizontalmente */
+            transform: translateX(-50%); /* Ajustar a centralização */
+            transition: all 0.3s ease;
+        }
+        .calculator-container:hover {
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        }
+        .calculator-container h2 {
+            text-align: center;
+            color: #333;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: border 0.2s;
+        }
+        .input-group input:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+        .result {
+            text-align: center;
+            font-size: 1.4em;
+            margin-top: 20px;
+            color: #28a745;
+        }
+        .calculate-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .calculate-btn:hover {
+            background-color: #0056b3;
+        }
+        .instruction {
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -89,10 +109,11 @@
     </div>
     <div class="input-group">
         <label for="wastage">Margem de Perda (%):</label>
-        <input type="text" id="wastage" placeholder="Ex: 10">
+        <input type="text" id="wastage" placeholder="Ex: 10" value="0">
     </div>
     <button class="calculate-btn" onclick="calculateTiles()">Calcular</button>
     <div class="result" id="result"></div>
+    <div class="error-message" id="error-message"></div>
 </div>
 
 <script>
@@ -109,15 +130,19 @@
         const tileWidth = parseInput(document.getElementById("tileWidth").value) / 100; // Converter para metros
         const wastage = parseInput(document.getElementById("wastage").value) || 0;
 
+        // Limpar mensagens de erro
+        document.getElementById("error-message").innerHTML = "";
+        document.getElementById("result").innerHTML = "";
+
         // Validar os dados
         if (isNaN(roomLength) || isNaN(roomWidth) || isNaN(tileLength) || isNaN(tileWidth)) {
-            document.getElementById("result").innerHTML = "Por favor, insira valores válidos.";
+            document.getElementById("error-message").innerHTML = "Por favor, insira valores válidos.";
             return;
         }
 
         // Calcular a área do ambiente e do piso
-        const roomArea = roomLength * roomWidth;
-        const tileArea = tileLength * tileWidth;
+        const roomArea = roomLength * roomWidth; // Área do ambiente em m²
+        const tileArea = tileLength * tileWidth; // Área do piso em m²
 
         // Calcular a quantidade necessária de peças
         let tilesNeeded = roomArea / tileArea;
@@ -125,7 +150,7 @@
         tilesNeeded = Math.ceil(tilesNeeded); // Arredondar para cima
 
         // Exibir o resultado
-        document.getElementById("result").innerHTML = `Quantidade de peças necessária: ${tilesNeeded}`;
+        document.getElementById("result").innerHTML = `Quantidade de peças necessária: ${tilesNeeded} peças<br>Área total do ambiente: ${roomArea.toFixed(2)} m²`;
     }
 </script>
 
